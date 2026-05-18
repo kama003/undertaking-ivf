@@ -1,0 +1,6 @@
+{
+  "name": "Undertaking Lifecycle Manager",
+  "description": "Bulk generation, tracking, and automated bifurcation of ART Bank undertakings with QR code tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["PDF Generation", "PDF Splitting", "QR Code Processing", "Excel Data Import"]
+}
