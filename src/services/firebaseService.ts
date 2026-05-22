@@ -1,6 +1,7 @@
 import { db } from '../lib/firebase';
 import { collection, doc, getDocs, updateDoc, deleteDoc, writeBatch, query, orderBy, getDoc, setDoc } from 'firebase/firestore';
-import { UndertakingData, DocumentStatus, UserRole } from '../types';
+import { UndertakingData, DocumentStatus, UserRole, SalesRecord, SalesMonth } from '../types';
+
 
 const COLLECTION_NAME = 'undertakings';
 const undertakingsCollection = collection(db, COLLECTION_NAME);
@@ -128,6 +129,58 @@ export const firebaseService = {
       await setDoc(docRef, { role }, { merge: true });
     } catch (error) {
       console.error("Error updating user role:", error);
+      throw error;
+    }
+  },
+
+  // --- Sales Features ---
+
+  async fetchSalesRecords(monthKey: string): Promise<SalesRecord[]> {
+    try {
+      const q = query(collection(db, 'salesRecords'), orderBy('dateIssued', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const allRecords = querySnapshot.docs.map(doc => doc.data() as SalesRecord);
+      return allRecords.filter(r => r.monthKey === monthKey);
+    } catch (error) {
+      console.error("Error fetching sales records:", error);
+      return [];
+    }
+  },
+
+  async fetchSalesMonthStatus(monthKey: string): Promise<SalesMonth | null> {
+    try {
+      const docRef = doc(db, 'salesMonths', monthKey);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data() as SalesMonth;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching sales month status:", error);
+      return null;
+    }
+  },
+
+  async lockSalesMonth(monthKey: string): Promise<void> {
+    try {
+      const docRef = doc(db, 'salesMonths', monthKey);
+      await setDoc(docRef, { monthKey, isLocked: true, updatedAt: new Date().toISOString() }, { merge: true });
+    } catch (error) {
+      console.error("Error locking sales month:", error);
+      throw error;
+    }
+  },
+
+  async mergeSalesRecords(records: SalesRecord[]): Promise<void> {
+    try {
+      const batch = writeBatch(db);
+      records.forEach(data => {
+        const docRef = doc(db, 'salesRecords', data.id);
+        batch.set(docRef, data, { merge: true });
+      });
+      await batch.commit();
+    } catch (error) {
+      console.error("Error merging bulk sales records:", error);
       throw error;
     }
   }

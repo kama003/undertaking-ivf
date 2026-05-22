@@ -101,42 +101,7 @@ export default function Login() {
             </div>
           </div>
 
-          {isRegisterMode && (
-            <div className="space-y-2 pt-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Choose Role</label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setRole('admin')}
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 text-center transition-all cursor-pointer",
-                    role === 'admin'
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-slate-200 bg-white hover:border-slate-300 text-slate-500"
-                  )}
-                >
-                  <ShieldCheck className="w-6 h-6" />
-                  <span className="text-sm font-black uppercase tracking-wider">Admin</span>
-                  <span className="text-[10px] opacity-70 leading-tight">Full access (Generate & Upload)</span>
-                </button>
 
-                <button
-                  type="button"
-                  onClick={() => setRole('viewer')}
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 text-center transition-all cursor-pointer",
-                    role === 'viewer'
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-slate-200 bg-white hover:border-slate-300 text-slate-500"
-                  )}
-                >
-                  <Eye className="w-6 h-6" />
-                  <span className="text-sm font-black uppercase tracking-wider">Viewer</span>
-                  <span className="text-[10px] opacity-70 leading-tight">Read-only (No generate or upload)</span>
-                </button>
-              </div>
-            </div>
-          )}
 
           <button
             type="submit"
@@ -170,4 +135,3 @@ export default function Login() {
     </div>
   );
 }
- 

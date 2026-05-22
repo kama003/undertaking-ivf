@@ -30,3 +30,21 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export interface SalesRecord {
+  id: string; // Unique ID (e.g. monthKey_uhid_date)
+  monthKey: string; // e.g. "2026-04" for April 2026
+  uhid: string; // Maps to DONOR NUMBER
+  dateIssued: string; // Maps to DATE ISSUED
+  serialNumber?: string;
+  batchNo?: string;
+  vialsIssued?: string | number;
+  artClinic?: string;
+  // Note: Notarised status is derived from Undertaking data
+}
+
+export interface SalesMonth {
+  monthKey: string; // "2026-04"
+  isLocked: boolean;
+  updatedAt: string;
+}
+

@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '../lib/utils';
-import { LayoutDashboard, FilePlus, Upload, Archive, Settings, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Upload, Archive, Settings, FileText, LogOut, BarChart3 } from 'lucide-react';
 
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -14,15 +14,18 @@ interface SidebarProps {
   onToggleRole: () => void;
 }
 
-const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'generate', label: 'Bulk Generate', icon: FilePlus },
-  { id: 'upload', label: 'Upload Scans', icon: Upload },
-  { id: 'archive', label: 'Store & Track', icon: Archive },
-];
-
 export default function Sidebar({ activeTab, setActiveTab, userRole, userEmail, onToggleRole }: SidebarProps) {
   const isViewer = userRole === 'viewer';
+
+  const navItems = [
+
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'generate', label: 'Bulk Generate', icon: FilePlus },
+    { id: 'upload', label: 'Upload Scans', icon: Upload },
+    { id: 'archive', label: 'Store & Track', icon: Archive },
+    { id: 'sales', label: 'Sales & Notary', icon: BarChart3 },
+  ];
+
   const filteredNavItems = navItems.filter(item => {
     if (isViewer && (item.id === 'generate' || item.id === 'upload')) {
       return false;
@@ -41,7 +44,7 @@ export default function Sidebar({ activeTab, setActiveTab, userRole, userEmail, 
           <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">Fertile Solutions</p>
         </div>
       </div>
-      
+
       <nav className="flex-1 px-4 py-6 space-y-1">
         {filteredNavItems.map((item) => (
           <button
@@ -49,8 +52,8 @@ export default function Sidebar({ activeTab, setActiveTab, userRole, userEmail, 
             onClick={() => setActiveTab(item.id)}
             className={cn(
               "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium cursor-pointer",
-              activeTab === item.id 
-                ? "bg-maroon/5 text-primary shadow-sm ring-1 ring-maroon/10" 
+              activeTab === item.id
+                ? "bg-maroon/5 text-primary shadow-sm ring-1 ring-maroon/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
             )}
           >
@@ -82,18 +85,18 @@ export default function Sidebar({ activeTab, setActiveTab, userRole, userEmail, 
               </span>
             </div>
           </div>
-          
-          <button
+
+          {/* <button
             onClick={onToggleRole}
             className="w-full mt-1 text-center py-1.5 px-3 bg-white hover:bg-slate-100 active:bg-slate-200 border border-slate-200 rounded-xl text-[9px] font-black uppercase tracking-wider text-slate-500 hover:text-slate-700 transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
             title="Conveniently toggle role for testing"
           >
             Switch to {userRole === 'admin' ? 'Viewer' : 'Admin'}
-          </button>
+          </button> */}
         </div>
 
         <div className="space-y-1">
-          <button 
+          <button
             onClick={() => signOut(auth)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors text-sm font-medium cursor-pointer"
           >
