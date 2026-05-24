@@ -62,16 +62,23 @@ export default function SalesManager({ userRole, undertakings }: SalesManagerPro
         return;
       }
 
-      const newRecords: SalesRecord[] = data.map((row: any, index: number) => ({
-        id: `${currentMonth}_${row['DONOR NUMBER'] || row.UHID || row.uhid || index}_${Date.now()}_${index}`,
-        monthKey: currentMonth,
-        uhid: String(row['DONOR NUMBER'] || row.UHID || row.uhid || ''),
-        dateIssued: row['DATE ISSUED'] || row.Date || row.date || new Date().toISOString().split('T')[0],
-        serialNumber: row['SERIAL NUMBER'] || '',
-        batchNo: row['BATCH NO'] || '',
-        vialsIssued: row['VIALS ISSUED'] || 0,
-        artClinic: row['ART CLINIC'] || ''
-      }));
+      const newRecords: SalesRecord[] = data.map((rawRow: any, index: number) => {
+        const row: any = {};
+        for (const key in rawRow) {
+          row[key.replace(/\s+/g, ' ').trim().toLowerCase()] = rawRow[key];
+        }
+
+        return {
+          id: `${currentMonth}_${String(row['donor number (uhid)'] || row['donor number'] || row['uhid'] || index).replace(/\//g, '-')}_${Date.now()}_${index}`,
+          monthKey: currentMonth,
+          uhid: String(row['donor number (uhid)'] || row['donor number'] || row['uhid'] || ''),
+          dateIssued: row['date issued'] || row['date'] || new Date().toISOString().split('T')[0],
+          serialNumber: row['serial number'] || '',
+          batchNo: row['batch no'] || '',
+          vialsIssued: row['vials issued'] || 0,
+          artClinic: row['art clinic'] || ''
+        };
+      });
 
       await firebaseService.mergeSalesRecords(newRecords);
       
@@ -151,7 +158,7 @@ export default function SalesManager({ userRole, undertakings }: SalesManagerPro
     setIsProcessing(true);
     try {
       const newRecord: SalesRecord = {
-        id: `${currentMonth}_${manualForm.uhid}_${Date.now()}`,
+        id: `${currentMonth}_${String(manualForm.uhid).replace(/\//g, '-')}_${Date.now()}`,
         monthKey: currentMonth,
         uhid: manualForm.uhid,
         dateIssued: manualForm.dateIssued,
