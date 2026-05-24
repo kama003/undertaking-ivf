@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '../lib/utils';
-import { LayoutDashboard, FilePlus, Upload, Archive, Settings, FileText, LogOut, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Upload, Archive, Settings, FileText, LogOut, BarChart3, Users } from 'lucide-react';
 
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
@@ -24,10 +24,11 @@ export default function Sidebar({ activeTab, setActiveTab, userRole, userEmail, 
     { id: 'upload', label: 'Upload Scans', icon: Upload },
     { id: 'archive', label: 'Store & Track', icon: Archive },
     { id: 'sales', label: 'Sales & Notary', icon: BarChart3 },
+    { id: 'users', label: 'User Management', icon: Users },
   ];
 
   const filteredNavItems = navItems.filter(item => {
-    if (isViewer && (item.id === 'generate' || item.id === 'upload')) {
+    if (isViewer && (item.id === 'generate' || item.id === 'upload' || item.id === 'users')) {
       return false;
     }
     return true;

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { FileCheck, FileClock, Printer, Scan, FileArchive, Activity, TrendingUp } from 'lucide-react';
+import { FileCheck, FileClock, Printer, Scan, FileArchive, Activity, TrendingUp, UserPlus, Loader2 } from 'lucide-react';
 import { UndertakingData } from '../types';
 import { cn } from '../lib/utils';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { secondaryAuth } from '../lib/firebase';
+import { firebaseService } from '../services/firebaseService';
 import { 
   PieChart, 
   Pie, 
@@ -18,9 +21,10 @@ import {
 
 interface DashboardProps {
   documents: UndertakingData[];
+  userRole?: 'admin' | 'viewer';
 }
 
-export default function Dashboard({ documents }: DashboardProps) {
+export default function Dashboard({ documents, userRole }: DashboardProps) {
   const stats = [
     { label: 'Generated', value: documents.filter(d => d.status === 'GENERATED').length, icon: FileClock, color: 'text-blue-500', bg: 'bg-blue-50' },
     { label: 'Printed', value: documents.filter(d => d.status === 'PRINTED').length, icon: Printer, color: 'text-amber-500', bg: 'bg-amber-50' },
@@ -157,6 +161,7 @@ export default function Dashboard({ documents }: DashboardProps) {
            <FileArchive className="w-96 h-96" />
         </div>
       </div>
+
     </div>
   );
 }

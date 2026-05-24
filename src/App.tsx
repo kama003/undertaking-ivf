@@ -10,6 +10,7 @@ import BulkGenerator from './components/BulkGenerator';
 import BulkUploader from './components/BulkUploader';
 import DocumentList from './components/DocumentList';
 import SalesManager from './components/SalesManager';
+import UserManagement from './components/UserManagement';
 import { UndertakingData, DocumentStatus } from './types';
 import { AnimatePresence, motion } from 'motion/react';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -209,12 +210,12 @@ export default function App() {
     const dashboardKey = `dash-${documents.length}-${documents.filter(d => d.status === 'STORED').length}`;
     
     switch (activeTab) {
-      case 'dashboard': return <div key={dashboardKey}><Dashboard documents={documents} /></div>;
+      case 'dashboard': return <div key={dashboardKey}><Dashboard documents={documents} userRole={userRole} /></div>;
       case 'generate': 
-        if (userRole === 'viewer') return <div key={dashboardKey}><Dashboard documents={documents} /></div>;
+        if (userRole === 'viewer') return <div key={dashboardKey}><Dashboard documents={documents} userRole={userRole} /></div>;
         return <BulkGenerator onGenerated={handleGenerated} />;
       case 'upload': 
-        if (userRole === 'viewer') return <div key={dashboardKey}><Dashboard documents={documents} /></div>;
+        if (userRole === 'viewer') return <div key={dashboardKey}><Dashboard documents={documents} userRole={userRole} /></div>;
         return <BulkUploader onProcessed={handleProcessed} existingDocs={documents} />;
       case 'archive': return <DocumentList 
         documents={documents} 
@@ -228,7 +229,10 @@ export default function App() {
         userRole={userRole}
         undertakings={documents}
       />;
-      default: return <div key={dashboardKey}><Dashboard documents={documents} /></div>;
+      case 'users': 
+        if (userRole === 'viewer') return <div key={dashboardKey}><Dashboard documents={documents} userRole={userRole} /></div>;
+        return <UserManagement />;
+      default: return <div key={dashboardKey}><Dashboard documents={documents} userRole={userRole} /></div>;
 
     }
   };

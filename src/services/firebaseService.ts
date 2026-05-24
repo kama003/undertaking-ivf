@@ -133,6 +133,27 @@ export const firebaseService = {
     }
   },
 
+  async fetchAllUsers(): Promise<UserProfile[]> {
+    try {
+      const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => doc.data() as UserProfile);
+    } catch (error) {
+      console.error("Error fetching all users:", error);
+      return [];
+    }
+  },
+
+  async deleteUserProfile(uid: string): Promise<void> {
+    try {
+      const docRef = doc(db, 'users', uid);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting user profile:", error);
+      throw error;
+    }
+  },
+
   // --- Sales Features ---
 
   async fetchSalesRecords(monthKey: string): Promise<SalesRecord[]> {

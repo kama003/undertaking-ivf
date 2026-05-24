@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, Mail, Loader2, ShieldCheck, Eye } from 'lucide-react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { Lock, Mail, Loader2, ShieldCheck } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { cn } from '../lib/utils';
-import { firebaseService } from '../services/firebaseService';
-import { UserRole } from '../types';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [role, setRole] = useState<UserRole>('viewer');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,22 +17,13 @@ export default function Login() {
     setError('');
 
     try {
-      if (isRegisterMode) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await firebaseService.createUserProfile(userCredential.user.uid, email, role);
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/invalid-credential') {
         setError('Invalid email or password.');
-      } else if (err.code === 'auth/email-already-in-use') {
-        setError('This email is already in use.');
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password must be at least 6 characters.');
       } else {
-        setError(isRegisterMode ? 'Failed to create account. Please try again.' : 'Failed to login. Please try again.');
+        setError('Failed to login. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
@@ -56,7 +43,7 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-black text-slate-900">R.K Biotech</h1>
           <p className="text-slate-500 mt-2 text-sm">
-            {isRegisterMode ? 'Create an account to manage undertakings.' : 'Sign in to manage patient undertakings.'}
+            Sign in to manage patient undertakings.
           </p>
         </div>
 
@@ -114,23 +101,10 @@ export default function Login() {
             {isSubmitting ? (
               <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
             ) : (
-              isRegisterMode ? "Create Account" : "Secure Login"
+              "Secure Login"
             )}
           </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => {
-              setIsRegisterMode(!isRegisterMode);
-              setError('');
-            }}
-            className="text-xs font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-widest cursor-pointer pl-1"
-          >
-            {isRegisterMode ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-          </button>
-        </div>
       </motion.div>
     </div>
   );

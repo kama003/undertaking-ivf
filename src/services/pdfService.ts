@@ -10,105 +10,108 @@ const PDFJS_VERSION = '3.11.174';
 PDFJS.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
 
 export const generateUndertakingPDF = async (data: UndertakingData, qrDataUrl: string): Promise<Blob> => {
-  const doc = new jsPDF();
-  
+  const doc = new jsPDF({ format: 'a3' });
+
+  // A3 dimensions: 297 x 420 mm
+  const centerX = 148.5;
+  const marginX = 35;
+  const textWidth = 227;
+
   // Header section (Matching the image)
   doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'bold');
-  
+  doc.setFont('courier', 'bold');
+
   // Title
-  doc.setFontSize(14);
+  doc.setFontSize(17);
   const title = 'RK BIOTECH FERTILE SOLUTIONS: ART BANK';
-  doc.text(title, 105, 30, { align: 'center' });
-  
+  doc.text(title, centerX, 50, { align: 'center' });
+
   // Registration Number
-  doc.setFontSize(11);
+  doc.setFontSize(16);
   const regNo = 'REGD. NO: PB/AB/2022/10041/AB/SAS Nagar/017';
   const regNoWidth = doc.getTextWidth(regNo);
-  doc.text(regNo, 105, 40, { align: 'center' });
-  
+  doc.text(regNo, centerX, 64, { align: 'center' });
+
   // Barcode next to Registration Number (NAGAR/017)
-  // Positioned to the right of the registration line, larger for easier scanning
-  const qrSize = 21;
-  doc.addImage(qrDataUrl, 'PNG', 107 + (regNoWidth / 2) + 5 , 32, qrSize, qrSize);
-  
+  const qrSize = 30;
+  doc.addImage(qrDataUrl, 'PNG', centerX + (regNoWidth / 2) + 7, 45, qrSize, qrSize);
+
   // Sub-title
-  doc.setFont('helvetica', 'normal');
-  doc.text('Undertaking by ART Bank', 105, 50, { align: 'center' });
+  doc.setFont('courier', 'normal');
+  doc.text('Undertaking by ART Bank', centerX, 85, { align: 'center' });
 
   // Recipient
-  doc.setFontSize(12);
-  doc.text('To,', 25, 70);
-  doc.setFont('helvetica', 'bold');
-  doc.text('IVF Center', 25, 85);
-  doc.text(data.hospitalName.toUpperCase(), 25, 100);
+  doc.setFontSize(16);
+  doc.text('To,', marginX, 113);
+  doc.text('IVF Center', marginX, 134);
+  doc.text(data.hospitalName.toUpperCase(), marginX, 155);
 
   // Main Body
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(16);
   const bodyText = `R.K. Biotech, a registered ART Bank with registration number: PB/AB/2022/10041/AB/SAS Nagar/017 having registered office at S.C.O. 1042, 2nd Floor, Connaught Plaza, TDI City, Sector 74-A, SAS Nagar, Mohali, Punjab-160071, do hereby confirm details as given below:-`;
-  
-  const splitBody = doc.splitTextToSize(bodyText, 160);
-  doc.text(splitBody, 25, 125, { lineHeightFactor: 1.5 });
 
-  let yPos = 160;
-  
+  const splitBody = doc.splitTextToSize(bodyText, textWidth);
+  doc.text(splitBody, marginX, 191, { lineHeightFactor: 2.0 });
+
+  let yPos = 254;
+
   if (data.useDetailedFormat) {
     // Detailed format
-    doc.setFont('helvetica', 'bold');
-    doc.text('COUPLE DETAILS:', 25, yPos);
-    doc.setFont('helvetica', 'normal');
-    
-    yPos += 12;
-    doc.text(`Wife Name:`, 25, yPos);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${data.wifeName || 'N/A'}`, 65, yPos);
-    
-    yPos += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Wife Aadhar:`, 25, yPos);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${data.wifeAadhar || 'N/A'}`, 65, yPos);
-    
-    yPos += 12;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Husband Name:`, 25, yPos);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${data.husbandName || 'N/A'}`, 65, yPos);
-    
-    yPos += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Husband Aadhar:`, 25, yPos);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${data.husbandAadhar || 'N/A'}`, 65, yPos);
-    
-    yPos += 15;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`DONOR UHID:`, 25, yPos);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${data.uhid}`, 65, yPos);
-    
-    yPos += 15;
+    doc.setFont('courier', 'bold');
+    doc.text('COUPLE DETAILS:', marginX, yPos);
+    doc.setFont('courier', 'normal');
+
+    yPos += 21;
+    doc.text(`Wife Name:`, marginX, yPos);
+    doc.setFont('courier', 'bold');
+    doc.text(`${data.wifeName || 'N/A'}`, marginX + 56, yPos);
+
+    yPos += 14;
+    doc.setFont('courier', 'normal');
+    doc.text(`Wife Aadhar:`, marginX, yPos);
+    doc.setFont('courier', 'bold');
+    doc.text(`${data.wifeAadhar || 'N/A'}`, marginX + 56, yPos);
+
+    yPos += 21;
+    doc.setFont('courier', 'normal');
+    doc.text(`Husband Name:`, marginX, yPos);
+    doc.setFont('courier', 'bold');
+    doc.text(`${data.husbandName || 'N/A'}`, marginX + 56, yPos);
+
+    yPos += 14;
+    doc.setFont('courier', 'normal');
+    doc.text(`Husband Aadhar:`, marginX, yPos);
+    doc.setFont('courier', 'bold');
+    doc.text(`${data.husbandAadhar || 'N/A'}`, marginX + 56, yPos);
+
+    yPos += 28;
+    doc.setFont('courier', 'normal');
+    doc.text(`DONOR UHID:`, marginX, yPos);
+    doc.setFont('courier', 'bold');
+    doc.text(`${data.uhid}`, marginX + 56, yPos);
+
+    yPos += 28;
     const donorText = `ART Bank has not supplied Sperms of the Donor Number- UHID: ${data.uhid} to more than one commissioning couple/single women or clinic.`;
-    const splitDonor = doc.splitTextToSize(donorText, 160);
-    doc.setFont('helvetica', 'normal');
-    doc.text(splitDonor, 25, yPos, { lineHeightFactor: 1.5 });
+    const splitDonor = doc.splitTextToSize(donorText, textWidth);
+    doc.setFont('courier', 'normal');
+    doc.text(splitDonor, marginX, yPos, { lineHeightFactor: 2.0 });
   } else {
-    // Basic format (as in image)
-    const donorText = `ART Bank has not supplied Sperms of the Donor Number- UHID: ${data.uhid} to more than one commissioning couple/single women or clinic.`;
-    const splitDonor = doc.splitTextToSize(donorText, 160);
-    doc.text(splitDonor, 25, yPos, { lineHeightFactor: 1.5 });
+    // Basic format
+    const donorText = `ART Bank has not supplied Sperms of the Donor Number- UHID:   ${data.uhid}   to more than one commissioning couple/single women or clinic.`;
+    const splitDonor = doc.splitTextToSize(donorText, textWidth);
+    doc.text(splitDonor, marginX, yPos, { lineHeightFactor: 2.0 });
   }
 
   // Footer / Signatory
-  doc.setFont('helvetica', 'normal');
-  doc.text('Authorized Signatory', 25, 250);
-  doc.text('ART Bank', 25, 260);
+  doc.setFont('courier', 'normal');
+  doc.text('Authorized Signatory', marginX, 339);
+  doc.text('ART Bank', marginX, 360);
 
   // Hidden tracking info for barcode scan
-  doc.setFontSize(8);
+  doc.setFontSize(11);
   doc.setTextColor(200, 200, 200);
-  doc.text(`ID: ${data.id} | ${data.generatedDate}`, 150, 285);
+  doc.text(`ID: ${data.id} | ${data.generatedDate}`, 212, 403);
 
   return doc.output('blob');
 };
@@ -125,7 +128,7 @@ export const mergePDFs = async (pdfBlobs: Blob[]): Promise<Blob> => {
   return new Blob([pdfBytes], { type: 'application/pdf' });
 };
 
-export const splitAndRecognizePDF = async (pdfBlob: Blob): Promise<{uhid: string, pageBlob: Blob}[]> => {
+export const splitAndRecognizePDF = async (pdfBlob: Blob): Promise<{ uhid: string, pageBlob: Blob }[]> => {
   const arrayBuffer = await pdfBlob.arrayBuffer();
   const pdfDoc = await PDFDocument.load(arrayBuffer);
   const pageCount = pdfDoc.getPageCount();
@@ -155,7 +158,7 @@ export const splitAndRecognizePDF = async (pdfBlob: Blob): Promise<{uhid: string
 
       const imageData = context!.getImageData(0, 0, canvas.width, canvas.height);
       const code = jsQR(imageData.data, imageData.width, imageData.height);
-      
+
       if (code) {
         uhid = code.data; // We assuming QR contains UHID
       }
